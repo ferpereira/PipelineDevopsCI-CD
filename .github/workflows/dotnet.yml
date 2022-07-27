@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-
-env:
-  AZURE_WEBAPP_NAME: pucdevolps   # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '6.0.x' 
-
 jobs:
   build:
 
@@ -20,26 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-    - name: Install dependencies
+    - name: Restore dependencies
       run: dotnet restore
-    - name: Build and Publish
-      run: |
-        dotnet build --configuration Release --no-restore
-        dotnet test --no-restore --verbosity normal
-        dotnet publish -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/output'
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: artifact
-        path: output/
-
-    # Deploy to Azure Web apps
-    - name: 'Run Azure webapp deploy action using publish profile credentials'
-      uses: pucdevolps\$pucdevolps
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/output'
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
