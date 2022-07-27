@@ -36,9 +36,10 @@ jobs:
         path: output/
 
     - name: 'Azure login'
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      with: # Set Azure credentials secret as an input
+        credentials: ${{ secrets.AZURE_CREDENTIALS }}
+      env: # Or as an environment variable
+        credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
     # Deploy to Azure Web apps
     - name: 'Run Azure webapp deploy action using publish profile credentials'
